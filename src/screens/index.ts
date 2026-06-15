@@ -1,4 +1,11 @@
+export { default as AdminDoctorDetailScreen } from './AdminDoctorDetailScreen';
+export { default as AdminDoctorsScreen } from './AdminDoctorsScreen';
+export { default as DoctorAvailabilityScreen } from './DoctorAvailabilityScreen';
+export { default as DoctorCompleteProfileScreen } from './DoctorCompleteProfileScreen';
+export { default as DoctorProfileUnderReviewScreen } from './DoctorProfileUnderReviewScreen';
 export { default as HomeScreen } from './HomeScreen';
 export { default as LoginScreen } from './LoginScreen';
+export { default as PatientDoctorDetailScreen } from './PatientDoctorDetailScreen';
+export { default as PatientFindDoctorsScreen } from './PatientFindDoctorsScreen';
 export { default as ProfileSettingsScreen } from './ProfileSettingsScreen';
 export { default as RegisterScreen } from './RegisterScreen';

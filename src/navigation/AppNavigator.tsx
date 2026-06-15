@@ -5,11 +5,32 @@ import { useAuth } from '../context/AuthContext';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import HomeScreen from '../screens/HomeScreen';
-import { ProfileSettingsScreen } from '../screens';
-import { AuthStackParamList, MainStackParamList } from './types';
+import {
+  AdminDoctorDetailScreen,
+  AdminDoctorsScreen,
+  DoctorAvailabilityScreen,
+  DoctorCompleteProfileScreen,
+  DoctorProfileUnderReviewScreen,
+  PatientDoctorDetailScreen,
+  PatientFindDoctorsScreen,
+  ProfileSettingsScreen,
+} from '../screens';
+import {
+  AdminStackParamList,
+  AuthStackParamList,
+  MainStackParamList,
+} from './types';
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const MainStack = createNativeStackNavigator<MainStackParamList>();
+const AdminStack = createNativeStackNavigator<AdminStackParamList>();
+
+const headerOptions = {
+  headerStyle: { backgroundColor: '#2563eb' },
+  headerTintColor: '#fff',
+  headerTitleStyle: { fontWeight: '600' as const },
+  headerShadowVisible: false,
+};
 
 function AuthNavigator() {
   return (
@@ -22,21 +43,62 @@ function AuthNavigator() {
 
 function MainNavigator() {
   return (
-    <MainStack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: '#2563eb' },
-        headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: '600' },
-        headerShadowVisible: false,
-      }}
-    >
+    <MainStack.Navigator screenOptions={headerOptions}>
       <MainStack.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
       <MainStack.Screen
         name="ProfileSettings"
         component={ProfileSettingsScreen}
         options={{ title: 'Profile Settings' }}
       />
+      <MainStack.Screen
+        name="DoctorAvailability"
+        component={DoctorAvailabilityScreen}
+        options={{ title: 'Availability' }}
+      />
+      <MainStack.Screen
+        name="FindDoctors"
+        component={PatientFindDoctorsScreen}
+        options={{ title: 'Find a Doctor' }}
+      />
+      <MainStack.Screen
+        name="DoctorDetail"
+        component={PatientDoctorDetailScreen}
+        options={{ title: 'Doctor Profile' }}
+      />
     </MainStack.Navigator>
+  );
+}
+
+function DoctorGate() {
+  const { doctorProfile } = useAuth();
+
+  if (doctorProfile?.status === 'pending') {
+    return <DoctorProfileUnderReviewScreen />;
+  }
+
+  return <DoctorCompleteProfileScreen />;
+}
+
+function AdminNavigator() {
+  return (
+    <AdminStack.Navigator screenOptions={headerOptions}>
+      <AdminStack.Screen name="AdminHome" component={HomeScreen} options={{ title: 'Admin' }} />
+      <AdminStack.Screen
+        name="AdminDoctors"
+        component={AdminDoctorsScreen}
+        options={{ title: 'Doctor Applications' }}
+      />
+      <AdminStack.Screen
+        name="AdminDoctorDetail"
+        component={AdminDoctorDetailScreen}
+        options={{ title: 'Doctor Profile' }}
+      />
+      <AdminStack.Screen
+        name="ProfileSettings"
+        component={ProfileSettingsScreen}
+        options={{ title: 'Profile Settings' }}
+      />
+    </AdminStack.Navigator>
   );
 }
 
@@ -48,6 +110,33 @@ function LoadingScreen() {
   );
 }
 
+function AuthenticatedNavigator() {
+  const { user, doctorProfile, isDoctorProfileLoading } = useAuth();
+
+  if (user?.role === 'doctor') {
+    if (isDoctorProfileLoading) {
+      return <LoadingScreen />;
+    }
+
+    if (
+      !doctorProfile ||
+      doctorProfile.status === 'not_submitted' ||
+      doctorProfile.status === 'rejected' ||
+      doctorProfile.status === 'pending'
+    ) {
+      return <DoctorGate />;
+    }
+
+    return <MainNavigator />;
+  }
+
+  if (user?.role === 'admin') {
+    return <AdminNavigator />;
+  }
+
+  return <MainNavigator />;
+}
+
 export default function AppNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -57,7 +146,7 @@ export default function AppNavigator() {
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? <MainNavigator /> : <AuthNavigator />}
+      {isAuthenticated ? <AuthenticatedNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 }

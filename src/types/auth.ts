@@ -1,4 +1,6 @@
 export type Gender = 'male' | 'female' | 'other' | 'prefer_not_to_say';
+export type UserRole = 'patient' | 'doctor' | 'admin';
+export type SignupRole = 'patient' | 'doctor';
 
 export interface User {
   id: string;
@@ -6,6 +8,7 @@ export interface User {
   last_name: string;
   email: string;
   phone_no: string;
+  role: UserRole;
   gender: Gender | null;
   date_of_birth: string | null;
 }
@@ -26,6 +29,7 @@ export interface RegisterPayload {
   email: string;
   password: string;
   phone_no: string;
+  role: SignupRole;
   gender?: Gender;
   date_of_birth?: string;
 }

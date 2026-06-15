@@ -1,4 +1,5 @@
 import { isAxiosError } from 'axios';
+import { API_CONFIG } from '../config/api';
 
 type ApiErrorBody = {
   message?: string;
@@ -7,6 +8,10 @@ type ApiErrorBody = {
 
 export function getApiErrorMessage(error: unknown): string {
   if (isAxiosError<ApiErrorBody>(error)) {
+    if (!error.response) {
+      return `Cannot reach the API at ${API_CONFIG.BASE_URL}. Make sure the backend is running and the port matches.`;
+    }
+
     const data = error.response?.data;
     if (data?.errors) {
       const fieldMessages = Object.entries(data.errors)

@@ -26,6 +26,7 @@ type Props = NativeStackScreenProps<MainStackParamList, 'ProfileSettings'>;
 
 export default function ProfileSettingsScreen({ navigation }: Props) {
   const { user, updateProfile } = useAuth();
+  const isAdmin = user?.role === 'admin';
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phoneNo, setPhoneNo] = useState('');
@@ -42,12 +43,17 @@ export default function ProfileSettingsScreen({ navigation }: Props) {
   }, [user]);
 
   const handleSave = async () => {
-    if (!firstName.trim() || !lastName.trim() || !phoneNo.trim()) {
+    if (!firstName.trim() || !lastName.trim()) {
       Alert.alert('Missing fields', 'Please fill in all editable fields.');
       return;
     }
 
-    if (phoneNo.trim().length < 10) {
+    if (!isAdmin && !phoneNo.trim()) {
+      Alert.alert('Missing fields', 'Please fill in all editable fields.');
+      return;
+    }
+
+    if (!isAdmin && phoneNo.trim().length < 10) {
       Alert.alert('Invalid phone', 'Phone number must be at least 10 characters.');
       return;
     }
@@ -57,9 +63,13 @@ export default function ProfileSettingsScreen({ navigation }: Props) {
       await updateProfile({
         first_name: firstName.trim(),
         last_name: lastName.trim(),
-        phone_no: phoneNo.trim(),
-        gender,
-        date_of_birth: dateOfBirth ? toDateOfBirthPayload(dateOfBirth) : null,
+        ...(isAdmin
+          ? {}
+          : {
+              phone_no: phoneNo.trim(),
+              gender,
+              date_of_birth: dateOfBirth ? toDateOfBirthPayload(dateOfBirth) : null,
+            }),
       });
       Alert.alert('Success', 'Your profile has been updated.', [
         { text: 'OK', onPress: () => navigation.goBack() },
@@ -79,7 +89,9 @@ export default function ProfileSettingsScreen({ navigation }: Props) {
       >
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           <Text style={styles.description}>
-            Update your personal information. Email cannot be changed here.
+            {isAdmin
+              ? 'Update your account name. Email cannot be changed here.'
+              : 'Update your personal information. Email cannot be changed here.'}
           </Text>
 
           <View style={styles.form}>
@@ -115,36 +127,40 @@ export default function ProfileSettingsScreen({ navigation }: Props) {
               <Text style={styles.hint}>Email is read-only</Text>
             </View>
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Phone number</Text>
-              <TextInput
-                style={styles.input}
-                value={phoneNo}
-                onChangeText={setPhoneNo}
-                placeholder="Phone number"
-                keyboardType="phone-pad"
-              />
-            </View>
+            {!isAdmin ? (
+              <>
+                <View style={styles.field}>
+                  <Text style={styles.label}>Phone number</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={phoneNo}
+                    onChangeText={setPhoneNo}
+                    placeholder="Phone number"
+                    keyboardType="phone-pad"
+                  />
+                </View>
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Gender</Text>
-              <GenderSelect
-                value={gender}
-                onChange={setGender}
-                placeholder="Select gender"
-                inputStyle={styles.input}
-              />
-            </View>
+                <View style={styles.field}>
+                  <Text style={styles.label}>Gender</Text>
+                  <GenderSelect
+                    value={gender}
+                    onChange={setGender}
+                    placeholder="Select gender"
+                    inputStyle={styles.input}
+                  />
+                </View>
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Date of birth</Text>
-              <DateOfBirthInput
-                value={dateOfBirth}
-                onChange={setDateOfBirth}
-                placeholder="Select date of birth"
-                inputStyle={styles.input}
-              />
-            </View>
+                <View style={styles.field}>
+                  <Text style={styles.label}>Date of birth</Text>
+                  <DateOfBirthInput
+                    value={dateOfBirth}
+                    onChange={setDateOfBirth}
+                    placeholder="Select date of birth"
+                    inputStyle={styles.input}
+                  />
+                </View>
+              </>
+            ) : null}
           </View>
 
           <Pressable style={styles.saveButton} onPress={handleSave} disabled={saving}>

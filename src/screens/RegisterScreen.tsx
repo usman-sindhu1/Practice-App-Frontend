@@ -14,9 +14,10 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import DateOfBirthInput from '../components/DateOfBirthInput';
 import GenderSelect from '../components/GenderSelect';
+import RoleSelect from '../components/RoleSelect';
 import { useAuth } from '../context/AuthContext';
 import { AuthStackParamList } from '../navigation/types';
-import type { Gender } from '../types/auth';
+import type { Gender, SignupRole } from '../types/auth';
 import { toDateOfBirthPayload } from '../utils/dateOfBirth';
 import { getApiErrorMessage } from '../utils/apiError';
 
@@ -29,6 +30,7 @@ export default function RegisterScreen({ navigation }: Props) {
   const [email, setEmail] = useState('');
   const [phoneNo, setPhoneNo] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState<SignupRole>('patient');
   const [gender, setGender] = useState<Gender | null>(null);
   const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>();
   const [loading, setLoading] = useState(false);
@@ -57,6 +59,7 @@ export default function RegisterScreen({ navigation }: Props) {
         email: email.trim(),
         phone_no: phoneNo.trim(),
         password,
+        role,
         ...(gender ? { gender } : {}),
         ...(dateOfBirth ? { date_of_birth: toDateOfBirthPayload(dateOfBirth) } : {}),
       });
@@ -76,6 +79,8 @@ export default function RegisterScreen({ navigation }: Props) {
         <View style={styles.card}>
           <Text style={styles.title}>Create account</Text>
           <Text style={styles.subtitle}>Register to test your backend auth flow</Text>
+
+          <RoleSelect value={role} onChange={setRole} />
 
           <TextInput
             style={styles.input}
