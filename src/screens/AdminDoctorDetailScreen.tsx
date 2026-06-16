@@ -174,7 +174,7 @@ export default function AdminDoctorDetailScreen({ route, navigation }: Props) {
           <Text style={styles.sectionTitle}>General</Text>
           <InfoRow label="Profession" value={doctor.profession} />
           <InfoRow label="Languages" value={doctor.language} />
-          <InfoRow label="Service" value={doctor.service_name} />
+          <InfoRow label="Service" value={doctor.service?.name} />
         </View>
 
         {doctor.rejection_reason ? (

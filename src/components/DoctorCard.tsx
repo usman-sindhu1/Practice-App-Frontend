@@ -20,7 +20,7 @@ export default function DoctorCard({ doctor, onPress }: DoctorCardProps) {
       <View style={styles.content}>
         <Text style={styles.name}>{getDoctorDisplayName(doctor)}</Text>
         <Text style={styles.profession}>{doctor.profession ?? 'General practice'}</Text>
-        {doctor.service_name ? <Text style={styles.service}>{doctor.service_name}</Text> : null}
+        {doctor.service?.name ? <Text style={styles.service}>{doctor.service.name}</Text> : null}
         <View style={styles.badge}>
           <Text style={styles.badgeText}>Approved</Text>
         </View>

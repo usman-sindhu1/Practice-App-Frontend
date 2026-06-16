@@ -35,7 +35,11 @@ export interface PublicDoctor {
   last_name: string;
   full_name: string | null;
   profession: string | null;
-  service_name: string | null;
+  service: {
+    id: string;
+    name: string;
+    description: string | null;
+  } | null;
 }
 
 export interface PatientDoctorSlotsResponse {

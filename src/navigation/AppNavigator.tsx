@@ -6,11 +6,19 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import HomeScreen from '../screens/HomeScreen';
 import {
+  AdminAppointmentsScreen,
   AdminDoctorDetailScreen,
   AdminDoctorsScreen,
+  AdminServicesScreen,
+  AppointmentDetailScreen,
+  BookAppointmentDetailsScreen,
+  BookAppointmentReviewScreen,
+  BookAppointmentScreen,
+  DoctorAppointmentsScreen,
   DoctorAvailabilityScreen,
   DoctorCompleteProfileScreen,
   DoctorProfileUnderReviewScreen,
+  PatientAppointmentsScreen,
   PatientDoctorDetailScreen,
   PatientFindDoctorsScreen,
   ProfileSettingsScreen,
@@ -65,6 +73,36 @@ function MainNavigator() {
         component={PatientDoctorDetailScreen}
         options={{ title: 'Doctor Profile' }}
       />
+      <MainStack.Screen
+        name="BookAppointment"
+        component={BookAppointmentScreen}
+        options={{ title: 'Book Appointment' }}
+      />
+      <MainStack.Screen
+        name="BookAppointmentDetails"
+        component={BookAppointmentDetailsScreen}
+        options={{ title: 'Book Appointment' }}
+      />
+      <MainStack.Screen
+        name="BookAppointmentReview"
+        component={BookAppointmentReviewScreen}
+        options={{ title: 'Book Appointment' }}
+      />
+      <MainStack.Screen
+        name="PatientAppointments"
+        component={PatientAppointmentsScreen}
+        options={{ title: 'My Appointments' }}
+      />
+      <MainStack.Screen
+        name="DoctorAppointments"
+        component={DoctorAppointmentsScreen}
+        options={{ title: 'Appointments' }}
+      />
+      <MainStack.Screen
+        name="AppointmentDetail"
+        component={AppointmentDetailScreen}
+        options={{ title: 'Appointment Details' }}
+      />
     </MainStack.Navigator>
   );
 }
@@ -89,9 +127,24 @@ function AdminNavigator() {
         options={{ title: 'Doctor Applications' }}
       />
       <AdminStack.Screen
+        name="AdminServices"
+        component={AdminServicesScreen}
+        options={{ title: 'Services Catalog' }}
+      />
+      <AdminStack.Screen
+        name="AdminAppointments"
+        component={AdminAppointmentsScreen}
+        options={{ title: 'Appointments' }}
+      />
+      <AdminStack.Screen
         name="AdminDoctorDetail"
         component={AdminDoctorDetailScreen}
         options={{ title: 'Doctor Profile' }}
+      />
+      <AdminStack.Screen
+        name="AppointmentDetail"
+        component={AppointmentDetailScreen}
+        options={{ title: 'Appointment Details' }}
       />
       <AdminStack.Screen
         name="ProfileSettings"

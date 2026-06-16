@@ -12,10 +12,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FormField, { FormSection } from '../components/FormField';
+import ServicePicker from '../components/ServicePicker';
 import YearPickerInput from '../components/YearPickerInput';
 import { useAuth } from '../context/AuthContext';
+import { fetchActiveServices } from '../services/serviceService';
 import { colors } from '../theme/colors';
 import type { SubmitDoctorProfilePayload } from '../types/doctor';
+import type { Service } from '../types/service';
 import { getApiErrorMessage } from '../utils/apiError';
 
 import type { DoctorProfile } from '../types/doctor';
@@ -35,7 +38,7 @@ function profileToForm(profile: DoctorProfile | null, user: ReturnType<typeof us
     instituteAddress: profile?.institute_address ?? '',
     profession: profile?.profession ?? '',
     language: profile?.language ?? '',
-    serviceName: profile?.service_name ?? '',
+    serviceId: profile?.service_id ?? null,
   };
 }
 
@@ -56,7 +59,9 @@ export default function DoctorCompleteProfileScreen() {
   const [instituteAddress, setInstituteAddress] = useState('');
   const [profession, setProfession] = useState('');
   const [language, setLanguage] = useState('');
-  const [serviceName, setServiceName] = useState('');
+  const [serviceId, setServiceId] = useState<string | null>(null);
+  const [services, setServices] = useState<Service[]>([]);
+  const [loadingServices, setLoadingServices] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -74,8 +79,24 @@ export default function DoctorCompleteProfileScreen() {
     setInstituteAddress(form.instituteAddress);
     setProfession(form.profession);
     setLanguage(form.language);
-    setServiceName(form.serviceName);
+    setServiceId(form.serviceId);
   }, [doctorProfile, user]);
+
+  useEffect(() => {
+    async function loadServices() {
+      setLoadingServices(true);
+      try {
+        const data = await fetchActiveServices();
+        setServices(data);
+      } catch (error) {
+        Alert.alert('Could not load services', getApiErrorMessage(error));
+      } finally {
+        setLoadingServices(false);
+      }
+    }
+
+    void loadServices();
+  }, []);
 
   const handleSubmit = async () => {
     const payload: SubmitDoctorProfilePayload = {
@@ -92,7 +113,7 @@ export default function DoctorCompleteProfileScreen() {
       institute_address: instituteAddress.trim(),
       profession: profession.trim(),
       language: language.trim(),
-      service_name: serviceName.trim(),
+      service_id: serviceId ?? '',
     };
 
     const requiredStrings = [
@@ -107,10 +128,14 @@ export default function DoctorCompleteProfileScreen() {
       payload.institute_address,
       payload.profession,
       payload.language,
-      payload.service_name,
     ];
 
-    if (requiredStrings.some((field) => !field.trim()) || !startYear || !completionYear) {
+    if (
+      requiredStrings.some((field) => !field.trim()) ||
+      !startYear ||
+      !completionYear ||
+      !serviceId
+    ) {
       Alert.alert('Missing fields', 'Please fill in all required fields.');
       return;
     }
@@ -221,12 +246,14 @@ export default function DoctorCompleteProfileScreen() {
                 onChangeText={setLanguage}
                 placeholder="e.g. English, Urdu"
               />
-              <FormField
-                label="Service name"
-                value={serviceName}
-                onChangeText={setServiceName}
-                placeholder="e.g. General Consultation"
-              />
+              {loadingServices ? (
+                <View style={styles.serviceLoading}>
+                  <ActivityIndicator color={colors.primary} />
+                  <Text style={styles.serviceLoadingText}>Loading services...</Text>
+                </View>
+              ) : (
+                <ServicePicker services={services} value={serviceId} onChange={setServiceId} />
+              )}
             </FormSection>
           </View>
 
@@ -315,5 +342,15 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontSize: 15,
     fontWeight: '500',
+  },
+  serviceLoading: {
+    gap: 8,
+    paddingVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  serviceLoadingText: {
+    fontSize: 14,
+    color: colors.textSecondary,
   },
 });

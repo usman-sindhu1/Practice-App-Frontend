@@ -1,4 +1,5 @@
 import type { Gender } from './auth';
+import type { Service } from './service';
 
 export type DoctorProfileStatus = 'not_submitted' | 'pending' | 'approved' | 'rejected';
 
@@ -19,7 +20,8 @@ export interface DoctorProfile {
   institute_address: string | null;
   profession: string | null;
   language: string | null;
-  service_name: string | null;
+  service_id: string | null;
+  service: Service | null;
   rejection_reason: string | null;
   created_at: string;
   updated_at: string;
@@ -39,7 +41,7 @@ export interface SubmitDoctorProfilePayload {
   institute_address: string;
   profession: string;
   language: string;
-  service_name: string;
+  service_id: string;
 }
 
 export interface AdminDoctorUser {

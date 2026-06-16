@@ -36,11 +36,27 @@ export default function HomeScreen({ navigation }: Props) {
       (navigation as AdminHomeProps['navigation']).navigate('AdminDoctors');
     }
   };
+  const openAdminServices = () => {
+    if (isAdmin) {
+      (navigation as AdminHomeProps['navigation']).navigate('AdminServices');
+    }
+  };
   const openDoctorAvailability = () => {
     (navigation as PatientHomeProps['navigation']).navigate('DoctorAvailability');
   };
   const openFindDoctors = () => {
     (navigation as PatientHomeProps['navigation']).navigate('FindDoctors');
+  };
+  const openPatientAppointments = () => {
+    (navigation as PatientHomeProps['navigation']).navigate('PatientAppointments');
+  };
+  const openDoctorAppointments = () => {
+    (navigation as PatientHomeProps['navigation']).navigate('DoctorAppointments');
+  };
+  const openAdminAppointments = () => {
+    if (isAdmin) {
+      (navigation as AdminHomeProps['navigation']).navigate('AdminAppointments');
+    }
   };
 
   const fullName = user ? `${user.first_name} ${user.last_name}` : 'Guest';
@@ -110,6 +126,19 @@ export default function HomeScreen({ navigation }: Props) {
 
         <View style={styles.actions}>
           {isDoctor ? (
+            <Pressable style={styles.actionButton} onPress={openDoctorAppointments}>
+              <View style={styles.actionIcon}>
+                <Text style={styles.actionIconText}>📋</Text>
+              </View>
+              <View style={styles.actionContent}>
+                <Text style={styles.actionTitle}>My Appointments</Text>
+                <Text style={styles.actionSubtitle}>View approved patient bookings</Text>
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </Pressable>
+          ) : null}
+
+          {isDoctor ? (
             <Pressable style={styles.actionButton} onPress={openDoctorAvailability}>
               <View style={styles.actionIcon}>
                 <Text style={styles.actionIconText}>📅</Text>
@@ -117,6 +146,19 @@ export default function HomeScreen({ navigation }: Props) {
               <View style={styles.actionContent}>
                 <Text style={styles.actionTitle}>Manage Availability</Text>
                 <Text style={styles.actionSubtitle}>Create appointment slots on your calendar</Text>
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </Pressable>
+          ) : null}
+
+          {isPatient ? (
+            <Pressable style={styles.actionButton} onPress={openPatientAppointments}>
+              <View style={styles.actionIcon}>
+                <Text style={styles.actionIconText}>📋</Text>
+              </View>
+              <View style={styles.actionContent}>
+                <Text style={styles.actionTitle}>My Appointments</Text>
+                <Text style={styles.actionSubtitle}>View pending, approved, and rejected bookings</Text>
               </View>
               <Text style={styles.chevron}>›</Text>
             </Pressable>
@@ -136,6 +178,19 @@ export default function HomeScreen({ navigation }: Props) {
           ) : null}
 
           {isAdmin ? (
+            <Pressable style={styles.actionButton} onPress={openAdminAppointments}>
+              <View style={styles.actionIcon}>
+                <Text style={styles.actionIconText}>📅</Text>
+              </View>
+              <View style={styles.actionContent}>
+                <Text style={styles.actionTitle}>Appointments</Text>
+                <Text style={styles.actionSubtitle}>Approve or reject booking requests</Text>
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </Pressable>
+          ) : null}
+
+          {isAdmin ? (
             <Pressable style={styles.actionButton} onPress={openAdminDoctors}>
               <View style={styles.actionIcon}>
                 <Text style={styles.actionIconText}>🩺</Text>
@@ -143,6 +198,19 @@ export default function HomeScreen({ navigation }: Props) {
               <View style={styles.actionContent}>
                 <Text style={styles.actionTitle}>Doctor Applications</Text>
                 <Text style={styles.actionSubtitle}>Review, approve, or reject doctors</Text>
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </Pressable>
+          ) : null}
+
+          {isAdmin ? (
+            <Pressable style={styles.actionButton} onPress={openAdminServices}>
+              <View style={styles.actionIcon}>
+                <Text style={styles.actionIconText}>📋</Text>
+              </View>
+              <View style={styles.actionContent}>
+                <Text style={styles.actionTitle}>Services Catalog</Text>
+                <Text style={styles.actionSubtitle}>Add, activate, or remove services</Text>
               </View>
               <Text style={styles.chevron}>›</Text>
             </Pressable>

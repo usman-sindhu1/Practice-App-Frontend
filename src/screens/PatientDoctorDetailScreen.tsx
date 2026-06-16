@@ -19,13 +19,14 @@ import {
 } from '../services/availabilityService';
 import { colors } from '../theme/colors';
 import type { AppointmentSlot, PublicDoctor } from '../types/availability';
-import { groupSlotsByDate, toApiDate } from '../utils/availability';
+import { formatSlotRange, groupSlotsByDate, toApiDate } from '../utils/availability';
 import { getApiErrorMessage } from '../utils/apiError';
 import { getDoctorDisplayName } from '../utils/publicDoctor';
+import { getAppointmentDateFromSlot } from '../types/booking';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'DoctorDetail'>;
 
-export default function PatientDoctorDetailScreen({ route }: Props) {
+export default function PatientDoctorDetailScreen({ route, navigation }: Props) {
   const { userId, doctor: initialDoctor } = route.params;
   const [doctor, setDoctor] = useState<PublicDoctor | null>(initialDoctor ?? null);
   const [slots, setSlots] = useState<AppointmentSlot[]>([]);
@@ -95,10 +96,23 @@ export default function PatientDoctorDetailScreen({ route }: Props) {
 
   const handleSelectSlot = (slot: AppointmentSlot) => {
     setSelectedSlot(slot);
-    Alert.alert(
-      'Slot selected',
-      'Booking will be available in a future update. Your slot id has been saved for the next step.',
-    );
+    navigation.navigate('BookAppointment', {
+      booking: {
+        doctor: {
+          doctorUserId: userId,
+          doctorName: doctor ? getDoctorDisplayName(doctor) : 'Doctor',
+          specialty: doctor?.profession ?? '—',
+          serviceName: doctor?.service?.name ?? '—',
+        },
+        slot: {
+          slotId: slot.id,
+          slotLabel: formatSlotRange(slot),
+          slotStartTime: slot.start_time,
+          slotEndTime: slot.end_time,
+          appointmentDate: getAppointmentDateFromSlot(slot.start_time),
+        },
+      },
+    });
   };
 
   if (loadingProfile && !doctor) {
@@ -124,7 +138,7 @@ export default function PatientDoctorDetailScreen({ route }: Props) {
           </View>
           <Text style={styles.name}>{doctor ? getDoctorDisplayName(doctor) : 'Doctor'}</Text>
           <Text style={styles.profession}>{doctor?.profession ?? 'General practice'}</Text>
-          {doctor?.service_name ? <Text style={styles.service}>{doctor.service_name}</Text> : null}
+          {doctor?.service?.name ? <Text style={styles.service}>{doctor.service.name}</Text> : null}
           <View style={styles.approvedBadge}>
             <Text style={styles.approvedBadgeText}>Approved doctor</Text>
           </View>
@@ -140,7 +154,7 @@ export default function PatientDoctorDetailScreen({ route }: Props) {
             <View style={styles.divider} />
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Service</Text>
-              <Text style={styles.detailValue}>{doctor?.service_name ?? '—'}</Text>
+              <Text style={styles.detailValue}>{doctor?.service?.name ?? '—'}</Text>
             </View>
           </View>
         </View>

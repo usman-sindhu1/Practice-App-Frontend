@@ -102,6 +102,7 @@ export default function AdminDoctorsScreen({ navigation }: Props) {
             </View>
             <Text style={styles.cardEmail}>{getDoctorAccountEmail(item)}</Text>
             {item.profession ? <Text style={styles.cardMeta}>{item.profession}</Text> : null}
+            {item.service?.name ? <Text style={styles.cardMeta}>Service: {item.service.name}</Text> : null}
             <Text style={styles.chevron}>›</Text>
           </Pressable>
         )}

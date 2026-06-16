@@ -18,6 +18,21 @@ export function parseDateOfBirth(isoDate: string | null | undefined): Date | und
   return Number.isNaN(date.getTime()) ? undefined : date;
 }
 
+export function calculateAgeFromDateOfBirth(isoDate: string | null | undefined): number | null {
+  const date = parseDateOfBirth(isoDate);
+  if (!date) return null;
+
+  const today = new Date();
+  let age = today.getFullYear() - date.getFullYear();
+  const monthDiff = today.getMonth() - date.getMonth();
+
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
+    age -= 1;
+  }
+
+  return age >= 0 ? age : null;
+}
+
 export function toDateOfBirthPayload(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
