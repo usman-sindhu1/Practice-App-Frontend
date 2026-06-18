@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { formatGender } from '../constants/gender';
 import { formatRole } from '../constants/role';
+import UserAvatar from '../components/UserAvatar';
 import { useAuth } from '../context/AuthContext';
 import { AdminStackParamList, MainStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
@@ -78,11 +79,14 @@ export default function HomeScreen({ navigation }: Props) {
     <SafeAreaView style={styles.safeArea} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.hero}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {getInitials(user?.first_name, user?.last_name)}
-            </Text>
-          </View>
+          <UserAvatar
+            imageUrl={user?.profile_image_url}
+            initials={getInitials(user?.first_name, user?.last_name)}
+            size={72}
+            backgroundColor="rgba(255,255,255,0.2)"
+            textColor="#fff"
+            style={styles.heroAvatar}
+          />
           <Text style={styles.greeting}>Welcome back,</Text>
           <Text style={styles.name}>{user?.first_name ?? 'User'}</Text>
           <View style={styles.roleBadge}>
@@ -259,19 +263,10 @@ const styles = StyleSheet.create({
     padding: 28,
     alignItems: 'center',
   },
-  avatar: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
+  heroAvatar: {
     marginBottom: 16,
-  },
-  avatarText: {
-    color: '#fff',
-    fontSize: 26,
-    fontWeight: '700',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.25)',
   },
   greeting: {
     color: 'rgba(255,255,255,0.85)',

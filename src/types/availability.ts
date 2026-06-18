@@ -40,6 +40,7 @@ export interface PublicDoctor {
     name: string;
     description: string | null;
   } | null;
+  profile_image_url?: string | null;
 }
 
 export interface PatientDoctorSlotsResponse {

@@ -11,6 +11,7 @@ export interface User {
   role: UserRole;
   gender: Gender | null;
   date_of_birth: string | null;
+  profile_image_url?: string | null;
 }
 
 export interface AuthResponse {
@@ -40,4 +41,5 @@ export interface UpdateProfilePayload {
   phone_no?: string;
   gender?: Gender | null;
   date_of_birth?: string | null;
+  profile_image_url?: string | null;
 }

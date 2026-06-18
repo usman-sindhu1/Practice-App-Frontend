@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import DateOfBirthInput from '../components/DateOfBirthInput';
 import GenderSelect from '../components/GenderSelect';
+import ProfileAvatarPicker from '../components/ProfileAvatarPicker';
 import { useAuth } from '../context/AuthContext';
 import { MainStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
@@ -23,6 +24,12 @@ import { parseDateOfBirth, toDateOfBirthPayload } from '../utils/dateOfBirth';
 import { getApiErrorMessage } from '../utils/apiError';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'ProfileSettings'>;
+
+function getInitials(firstName?: string, lastName?: string) {
+  const first = firstName?.charAt(0) ?? '';
+  const last = lastName?.charAt(0) ?? '';
+  return `${first}${last}`.toUpperCase() || '?';
+}
 
 export default function ProfileSettingsScreen({ navigation }: Props) {
   const { user, updateProfile } = useAuth();
@@ -41,6 +48,10 @@ export default function ProfileSettingsScreen({ navigation }: Props) {
     setGender(user?.gender ?? null);
     setDateOfBirth(parseDateOfBirth(user?.date_of_birth));
   }, [user]);
+
+  const handleProfileImageChange = async (fileUrl: string | null) => {
+    await updateProfile({ profile_image_url: fileUrl });
+  };
 
   const handleSave = async () => {
     if (!firstName.trim() || !lastName.trim()) {
@@ -93,6 +104,12 @@ export default function ProfileSettingsScreen({ navigation }: Props) {
               ? 'Update your account name. Email cannot be changed here.'
               : 'Update your personal information. Email cannot be changed here.'}
           </Text>
+
+          <ProfileAvatarPicker
+            imageUrl={user?.profile_image_url}
+            initials={getInitials(firstName, lastName)}
+            onImageUploaded={handleProfileImageChange}
+          />
 
           <View style={styles.form}>
             <View style={styles.field}>

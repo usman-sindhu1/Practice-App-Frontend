@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import UserAvatar from './UserAvatar';
 import { colors } from '../theme/colors';
 import type { PublicDoctor } from '../types/availability';
 import { getDoctorDisplayName } from '../utils/publicDoctor';
@@ -11,12 +12,11 @@ interface DoctorCardProps {
 export default function DoctorCard({ doctor, onPress }: DoctorCardProps) {
   return (
     <Pressable style={styles.card} onPress={onPress}>
-      <View style={styles.avatar}>
-        <Text style={styles.avatarText}>
-          {doctor.first_name.charAt(0)}
-          {doctor.last_name.charAt(0)}
-        </Text>
-      </View>
+      <UserAvatar
+        imageUrl={doctor.profile_image_url}
+        initials={`${doctor.first_name.charAt(0)}${doctor.last_name.charAt(0)}`}
+        size={54}
+      />
       <View style={styles.content}>
         <Text style={styles.name}>{getDoctorDisplayName(doctor)}</Text>
         <Text style={styles.profession}>{doctor.profession ?? 'General practice'}</Text>
@@ -41,19 +41,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: colors.border,
-  },
-  avatar: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: colors.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    color: colors.primary,
-    fontWeight: '700',
-    fontSize: 18,
   },
   content: {
     flex: 1,

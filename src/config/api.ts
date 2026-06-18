@@ -32,5 +32,7 @@ export const API_CONFIG = {
     ADMIN_APPOINTMENTS: '/admin/appointments',
     ADMIN_APPOINTMENT_STATUS: (appointmentId: string) =>
       `/admin/appointments/${appointmentId}/status`,
+    FILES_UPLOAD_URL: '/files/upload-url',
+    FILES: '/files',
   },
 } as const;

@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import SlotChip from '../components/SlotChip';
+import UserAvatar from '../components/UserAvatar';
 import WeekCalendar from '../components/WeekCalendar';
 import { MainStackParamList } from '../navigation/types';
 import {
@@ -130,12 +131,14 @@ export default function PatientDoctorDetailScreen({ route, navigation }: Props) 
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void refreshAll()} />}
       >
         <View style={styles.profileCard}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {doctor?.first_name?.charAt(0) ?? '?'}
-              {doctor?.last_name?.charAt(0) ?? ''}
-            </Text>
-          </View>
+          <UserAvatar
+            imageUrl={doctor?.profile_image_url}
+            initials={`${doctor?.first_name?.charAt(0) ?? '?'}${doctor?.last_name?.charAt(0) ?? ''}`}
+            size={72}
+            backgroundColor="rgba(255,255,255,0.2)"
+            textColor="#fff"
+            style={styles.profileAvatar}
+          />
           <Text style={styles.name}>{doctor ? getDoctorDisplayName(doctor) : 'Doctor'}</Text>
           <Text style={styles.profession}>{doctor?.profession ?? 'General practice'}</Text>
           {doctor?.service?.name ? <Text style={styles.service}>{doctor.service.name}</Text> : null}
@@ -217,19 +220,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  avatar: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
+  profileAvatar: {
     marginBottom: 8,
-  },
-  avatarText: {
-    color: '#fff',
-    fontSize: 26,
-    fontWeight: '700',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.25)',
   },
   name: {
     color: '#fff',

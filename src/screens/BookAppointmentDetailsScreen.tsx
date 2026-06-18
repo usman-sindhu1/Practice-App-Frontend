@@ -17,6 +17,7 @@ import BooleanSelect from '../components/BooleanSelect';
 import DateOfBirthInput from '../components/DateOfBirthInput';
 import FormField, { FormSection } from '../components/FormField';
 import GenderSelect from '../components/GenderSelect';
+import MedicalDocumentsSection from '../components/MedicalDocumentsSection';
 import { useAuth } from '../context/AuthContext';
 import { MainStackParamList } from '../navigation/types';
 import {
@@ -40,7 +41,7 @@ export default function BookAppointmentDetailsScreen({ navigation, route }: Prop
     : '';
   const isMe = patientType === 'me';
 
-  const [loading, setLoading] = useState(isMe);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const [firstName, setFirstName] = useState('');
@@ -55,20 +56,23 @@ export default function BookAppointmentDetailsScreen({ navigation, route }: Prop
   const [lastVisitDate, setLastVisitDate] = useState<Date | undefined>();
   const [preCondition, setPreCondition] = useState('');
   const [currentCondition, setCurrentCondition] = useState('');
+  const [documentUrls, setDocumentUrls] = useState<string[]>([]);
 
   const loadData = useCallback(async () => {
-    if (!isMe || !user) {
+    if (!user) {
       setLoading(false);
       return;
     }
 
     setLoading(true);
     try {
-      setFirstName(user.first_name ?? '');
-      setLastName(user.last_name ?? '');
-      setEmail(user.email ?? '');
-      setPhone(user.phone_no ?? '');
-      setGender(user.gender ?? null);
+      if (isMe) {
+        setFirstName(user.first_name ?? '');
+        setLastName(user.last_name ?? '');
+        setEmail(user.email ?? '');
+        setPhone(user.phone_no ?? '');
+        setGender(user.gender ?? null);
+      }
 
       const medicalInfo = await fetchPatientMedicalInfo();
       if (medicalInfo.is_first_therapy !== null) {
@@ -86,6 +90,9 @@ export default function BookAppointmentDetailsScreen({ navigation, route }: Prop
       if (medicalInfo.current_condition) {
         setCurrentCondition(medicalInfo.current_condition);
       }
+      if (medicalInfo.document_urls?.length) {
+        setDocumentUrls(medicalInfo.document_urls);
+      }
     } catch (error) {
       Alert.alert('Error', getApiErrorMessage(error));
     } finally {
@@ -94,13 +101,8 @@ export default function BookAppointmentDetailsScreen({ navigation, route }: Prop
   }, [isMe, user]);
 
   useEffect(() => {
-    if (isMe && user) {
-      loadData();
-      return;
-    }
-
-    setLoading(false);
-  }, [isMe, user, loadData]);
+    void loadData();
+  }, [loadData]);
 
   useEffect(() => {
     if (isFirstTherapy) {
@@ -192,6 +194,7 @@ export default function BookAppointmentDetailsScreen({ navigation, route }: Prop
         is_taking_medicine: isTakingMedicine as boolean,
         pre_condition: preCondition.trim(),
         current_condition: currentCondition.trim(),
+        ...(documentUrls.length ? { document_urls: documentUrls } : {}),
         ...(isFirstTherapy
           ? {}
           : { last_visit_date: toDateOfBirthPayload(lastVisitDate as Date) }),
@@ -368,6 +371,8 @@ export default function BookAppointmentDetailsScreen({ navigation, route }: Prop
               onChangeText={setCurrentCondition}
               placeholder="e.g. Back pain"
             />
+
+            <MedicalDocumentsSection documentUrls={documentUrls} onChange={setDocumentUrls} />
           </FormSection>
 
           <Pressable style={styles.continueButton} onPress={handleContinue} disabled={saving}>
